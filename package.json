@@ -1,0 +1,37 @@
+{
+  "name": "react-form-modal",
+  "version": "0.1.1",
+  "description": "Modal de formularios reutilizable con Reactstrap y react-datepicker",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "react": ">=17",
+    "react-dom": ">=17",
+    "reactstrap": ">=9",
+    "react-number-format": ">=5",
+    "react-datepicker": ">=7",
+    "prop-types": ">=15"
+  }
+}
