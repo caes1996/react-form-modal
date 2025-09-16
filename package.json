@@ -33,5 +33,13 @@
     "react-number-format": ">=5",
     "react-datepicker": ">=7",
     "prop-types": ">=15"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/caes1996/react-form-modal.git"
+  },
+  "bugs": {
+    "url": "https://github.com/caes1996/react-form-modal/issues"
+  },
+  "homepage": "https://github.com/caes1996/react-form-modal#readme"
 }
