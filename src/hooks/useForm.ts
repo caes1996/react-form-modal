@@ -12,8 +12,22 @@ export const useForm = (initialValues: Record<string, any>) => {
     const e = eOrValue as React.ChangeEvent<HTMLInputElement>
     const { name: n, type, value, checked, files } = e.target as any
     let final: any = value
-    if (type === 'checkbox' || type === 'switch') final = !!checked
-    if (type === 'file') final = files?.[0] ?? null
+    
+    // Manejar diferentes tipos de input
+    if (type === 'checkbox' || type === 'switch') {
+      final = !!checked
+    } else if (type === 'file') {
+      final = files?.[0] ?? null
+    } else if (type === 'number') {
+      // Convertir a número automáticamente
+      if (value === '' || value === null || value === undefined) {
+        final = ''
+      } else {
+        const num = parseFloat(value)
+        final = isNaN(num) ? value : num
+      }
+    }
+    
     setFormState(prev => ({ ...prev, [n]: final }))
   }, [])
 

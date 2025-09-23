@@ -6,6 +6,45 @@ import type { FormField, DynamicConfig } from './types'
 import { useForm } from '../../hooks/useForm'
 import '../../styles/datepicker-overrides.css'
 
+// Inyectar Bootstrap via CDN
+if (!document.getElementById('bootstrap-css')) {
+  const link = document.createElement('link')
+  link.id = 'bootstrap-css'
+  link.rel = 'stylesheet'
+  link.href = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css'
+  document.head.appendChild(link)
+}
+import 'react-datepicker/dist/react-datepicker.css'
+
+// Agregar estilos Bootstrap integrados
+const bootstrapStyles = `
+  @import url('https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css');
+  
+  /* Estilos adicionales para el componente */
+  .form-modal-container .form-label {
+    display: block !important;
+    margin-bottom: 0.5rem !important;
+  }
+  
+  .form-modal-container .react-datepicker-wrapper {
+    display: block !important;
+    width: 100% !important;
+  }
+  
+  .form-modal-container .react-datepicker__input-container {
+    display: block !important;
+    width: 100% !important;
+  }
+`
+
+// Inyectar estilos si no existen
+if (!document.getElementById('form-modal-styles')) {
+  const styleSheet = document.createElement('style')
+  styleSheet.id = 'form-modal-styles'
+  styleSheet.textContent = bootstrapStyles
+  document.head.appendChild(styleSheet)
+}
+
 export type FormModalProps = {
   isOpen: boolean
   toggle: () => void
@@ -129,40 +168,42 @@ export const FormModal: React.FC<FormModalProps> = ({
   }, [isOpen, initialFields, initialValues, setFormState])
 
   return (
-    <Modal isOpen={isOpen} toggle={toggle} centered size={modalSize}>
-      <ModalHeader toggle={toggle}>{title}</ModalHeader>
-      <form onSubmit={handleSubmit}>
-        <ModalBody>
-          <fieldset>
-            <div className="row">
-              {displayFields.map((field, index) => (
-                <FieldRenderer
-                  key={field.name}
-                  field={field}
-                  index={index}
-                  formState={formState}
-                  onInputChange={onInputChange}
-                  handleControlFieldChange={handleControlFieldChange}
-                  dynamicConfig={dynamicConfig}
-                  loading={loading}
-                  searchTexts={searchTexts}
-                  setSearchTexts={setSearchTexts}
-                  isSelectOpen={isSelectOpen}
-                  setIsSelectOpen={setIsSelectOpen}
-                  backgroundSearch={backgroundSearch}
-                />
-              ))}
-            </div>
-          </fieldset>
-        </ModalBody>
-        <ModalFooter>
-          <Button color="light" onClick={toggle} disabled={loading}>{' '}{cancelButtonText}{' '}</Button>
-          <Button color="success" type="submit" disabled={loading}>
-            {loading ? (<><Spinner size="sm" /> Procesando...</>) : submitButtonText}
-          </Button>
-        </ModalFooter>
-      </form>
-    </Modal>
+    <div className="form-modal-container">
+      <Modal isOpen={isOpen} toggle={toggle} centered size={modalSize}>
+        <ModalHeader toggle={toggle}>{title}</ModalHeader>
+        <form onSubmit={handleSubmit}>
+          <ModalBody>
+            <fieldset>
+              <div className="row">
+                {displayFields.map((field, index) => (
+                  <FieldRenderer
+                    key={field.name}
+                    field={field}
+                    index={index}
+                    formState={formState}
+                    onInputChange={onInputChange}
+                    handleControlFieldChange={handleControlFieldChange}
+                    dynamicConfig={dynamicConfig}
+                    loading={loading}
+                    searchTexts={searchTexts}
+                    setSearchTexts={setSearchTexts}
+                    isSelectOpen={isSelectOpen}
+                    setIsSelectOpen={setIsSelectOpen}
+                    backgroundSearch={backgroundSearch}
+                  />
+                ))}
+              </div>
+            </fieldset>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="light" onClick={toggle} disabled={loading}>{' '}{cancelButtonText}{' '}</Button>
+            <Button color="success" type="submit" disabled={loading}>
+              {loading ? (<><Spinner size="sm" /> Procesando...</>) : submitButtonText}
+            </Button>
+          </ModalFooter>
+        </form>
+      </Modal>
+    </div>
   )
 }
 

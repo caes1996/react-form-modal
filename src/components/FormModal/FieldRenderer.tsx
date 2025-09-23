@@ -65,7 +65,7 @@ export const FieldRenderer: React.FC<FieldRendererProps> = (props) => {
           <NumericFormat
             thousandSeparator prefix="$" className="form-control" name={name} id={name}
             placeholder={placeholder} value={currentValue}
-            onValueChange={({ value }) => onInputChange(value, name)}
+            onValueChange={({ floatValue }) => onInputChange(floatValue || 0, name)} // Cambio aquí
             required={required} disabled={isDisabled}
           />
           {description && <small className="form-text text-muted">{description}</small>}
@@ -228,11 +228,15 @@ export const FieldRenderer: React.FC<FieldRendererProps> = (props) => {
     return (
       <div className={colClasses} key={index}>
         <FormGroup>
-          <Label htmlFor={name}>{label}{required && <span className="text-danger ms-1">*</span>}</Label>
-          {fieldType === 'date' && (<DatePicker {...commonProps} dateFormat="yyyy-MM-dd" />)}
-          {fieldType === 'datetime-local' && (<DatePicker {...commonProps} showTimeSelect timeIntervals={field.step ? Number(field.step) : 15} dateFormat="yyyy-MM-dd HH:mm" />)}
-          {fieldType === 'time' && (<DatePicker {...commonProps} showTimeSelect showTimeSelectOnly timeIntervals={field.step ? Number(field.step) : 15} timeCaption="Hora" dateFormat="HH:mm" />)}
-          {description && <small className="form-text text-muted">{description}</small>}
+          <Label htmlFor={name} className="form-label d-block mb-2">
+            {label}{required && <span className="text-danger ms-1">*</span>}
+          </Label>
+          <div className="date-picker-wrapper" style={{ display: 'block', width: '100%' }}>
+            {fieldType === 'date' && (<DatePicker {...commonProps} dateFormat="yyyy-MM-dd" />)}
+            {fieldType === 'datetime-local' && (<DatePicker {...commonProps} showTimeSelect timeIntervals={field.step ? Number(field.step) : 15} dateFormat="yyyy-MM-dd HH:mm" />)}
+            {fieldType === 'time' && (<DatePicker {...commonProps} showTimeSelect showTimeSelectOnly timeIntervals={field.step ? Number(field.step) : 15} timeCaption="Hora" dateFormat="HH:mm" />)}
+          </div>
+          {description && <small className="form-text text-muted d-block mt-1">{description}</small>}
         </FormGroup>
       </div>
     )
@@ -414,11 +418,6 @@ export const FieldRenderer: React.FC<FieldRendererProps> = (props) => {
   }
 
   if (fieldType === 'percent') {
-    const num =
-      currentValue === '' || currentValue === null || currentValue === undefined
-        ? ''
-        : Number(currentValue)
-
     return (
       <div className={colClasses} key={index}>
         <FormGroup>
@@ -430,15 +429,31 @@ export const FieldRenderer: React.FC<FieldRendererProps> = (props) => {
             <Input
               id={name}
               name={name}
-              type="number"              // <-- aquí el cambio clave
+              type="number"
               placeholder={placeholder}
-              value={num}
-              onChange={onInputChange}
+              value={currentValue === '' || currentValue == null ? '' : currentValue}
+              onChange={(e) => {
+                const val = e.target.value
+                const numVal = val === '' ? '' : parseFloat(val)
+                onInputChange(isNaN(numVal as number) ? '' : numVal, name)
+              }}
+              onKeyDown={(e) => {
+                // Permitir teclas de control y navegación
+                if (['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'Home', 'End', 'ArrowLeft', 'ArrowRight'].includes(e.key) ||
+                    // Permitir Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+                    (e.ctrlKey && ['a', 'c', 'v', 'x'].includes(e.key.toLowerCase()))) {
+                  return
+                }
+                // Bloquear si no es número, punto decimal o signo menos
+                if (!/[0-9\.\-]/.test(e.key)) {
+                  e.preventDefault()
+                }
+              }}
               required={required}
               disabled={isDisabled}
               min={min ?? 0}
               max={max ?? 100}
-              step={step ?? 1}
+              step={step ?? 0.01}
             />
             <InputGroupText>%</InputGroupText>
           </InputGroup>
@@ -450,7 +465,47 @@ export const FieldRenderer: React.FC<FieldRendererProps> = (props) => {
     )
   }
 
+  if (fieldType === 'number') {
+    return (
+      <div className={colClasses} key={index}>
+        <FormGroup>
+          <Label htmlFor={name}>{label}{required && <span className="text-danger ms-1">*</span>}</Label>
+          <Input
+            type="number" 
+            name={name} 
+            id={name} 
+            placeholder={placeholder}
+            value={currentValue === '' || currentValue == null ? '' : currentValue}
+            onChange={(e) => {
+              const val = e.target.value
+              const numVal = val === '' ? '' : parseFloat(val)
+              onInputChange(isNaN(numVal as number) ? '' : numVal, name)
+            }}
+            onKeyDown={(e) => {
+              // Permitir teclas de control y navegación
+              if (['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'Home', 'End', 'ArrowLeft', 'ArrowRight'].includes(e.key) ||
+                  // Permitir Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+                  (e.ctrlKey && ['a', 'c', 'v', 'x'].includes(e.key.toLowerCase()))) {
+                return
+              }
+              // Bloquear si no es número, punto decimal o signo menos
+              if (!/[0-9\.\-]/.test(e.key)) {
+                e.preventDefault()
+              }
+            }}
+            required={required} 
+            disabled={isDisabled}
+            min={min} 
+            max={max} 
+            step={step ?? "any"}
+          />
+          {description && <small className="form-text text-muted">{description}</small>}
+        </FormGroup>
+      </div>
+    )
+  }
 
+  // Campo genérico para otros tipos
   return (
     <div className={colClasses} key={index}>
       <FormGroup>

@@ -3,7 +3,24 @@
 
 /* INPUT: mismo look que Bootstrap/Reactstrap form-control (claro) */
 .react-datepicker-wrapper,
-.react-datepicker__input-container { width: 100%; }
+.react-datepicker__input-container { 
+  width: 100% !important; 
+  display: block !important;
+}
+
+/* Asegurar que el label no esté en la misma línea */
+.date-picker-wrapper {
+  display: block !important;
+  width: 100% !important;
+  clear: both !important;
+}
+
+.form-modal-container .form-label {
+  display: block !important;
+  margin-bottom: 0.5rem !important;
+  width: 100% !important;
+  float: none !important;
+}
 
 .react-datepicker__input-container input.form-control {
   background-color: #fff !important;
@@ -14,6 +31,8 @@
   font-size: 0.875rem;
   line-height: 1.5;
   transition: box-shadow .15s, border-color .15s;
+  width: 100% !important;
+  display: block !important;
 }
 
 .react-datepicker__input-container input.form-control::placeholder {
