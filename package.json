@@ -1,6 +1,6 @@
 {
   "name": "react-form-modal",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Modal de formularios reutilizable con Reactstrap y react-datepicker",
   "license": "MIT",
   "type": "module",
